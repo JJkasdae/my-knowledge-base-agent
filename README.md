@@ -61,7 +61,7 @@ That last one is the interesting part. It reads the prose of every note at once,
 
 ## After the workshop
 
-Everything here is yours to keep and change. The most useful thing you can do next is ask the assistant about itself:
+Everything here is yours to keep and change. **[`NEXT.md`](NEXT.md)** is the list of what to do next, in the order it is worth doing — none of it required. The first item costs nothing and matters most: ask the assistant about itself.
 
 ```
 Read .claude/rules/substance-test.md and explain it to me

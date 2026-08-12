@@ -32,7 +32,7 @@ Every directory that holds content is declared here, with two independent proper
 | `Streams/` | dated entries of recurring operational series (trackers, logs) | not bound | none |
 | `Sources/` | original files, kept verbatim | not bound | none |
 
-`Templates/` is tooling and `user_level_file_template/` is one-time setup scaffolding — neither is a corpus.
+`Templates/` is tooling, not a corpus.
 
 **Adding a corpus is the user's call, and it is one row here.** To decide the SSOT column, ask what the directory holds: *standing claims* — things the vault presents as currently true — or *dated snapshots* of what was true at one moment. Standing claims are bound; snapshots are not (`.claude/rules/single-source-of-truth.md` → Scope). Unbound never means unconstrained: no corpus may contradict a standing claim held in a bound one.
 

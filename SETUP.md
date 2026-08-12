@@ -1,460 +1,182 @@
 # SETUP.md — the setup procedure
 
 > **This file is written for the agent.** If you are a person: you do not need to read it. Open this
-> folder in Claude Code and say *"Read SETUP.md and set this vault up for me."* The agent works through
-> what follows and asks you the handful of questions only you can answer.
+> folder in Claude Code and say *"Read SETUP.md and set this vault up for me."*
 
 ---
 
 ## How to run this (agent, read this section first)
 
-You are configuring a fresh copy of this template — cloned *or* unzipped — into **this user's personal vault**. Work through
-the phases **in order**. Each phase is written as:
+You are configuring a fresh copy of this template into **this user's personal vault**. Four phases, in
+order. Target: **five minutes**, and **one** point where you ask the user anything.
 
-| Field | Meaning |
-|---|---|
-| **Goal** | What must be true when the phase is done. |
-| **Do** | The actions to take. |
-| **Check** | The verification that proves it worked. Run it. Do not assume. |
-| **On fail** | What to do when the check fails. |
+**Four standing constraints for the whole run:**
 
-**Five standing constraints for the whole run:**
-
-1. **Never skip a Check.** A phase is not done because you ran the command; it is done because the check
-   passed. If a check fails, stop at that phase and resolve it. Do not carry a broken step forward.
-2. **Stop at every 🔸 STOP.** Those are the points where only the user can decide. Ask, wait, use their
-   answer. Never guess a name, a preference, or a deletion on their behalf.
+1. **Ask everything in Phase 2, in a single message. Nothing before it, nothing after it.** Phases 1, 3
+   and 4 are silent: run them, report what happened, do not stop for approval. This is not a style
+   preference — this file is run by a roomful of people at once, and an agent that asks one extra
+   question puts its user a minute behind everyone else.
+2. **Never skip a Check.** A phase is done when its check passes, not when you ran the command.
 3. **`atomic-operation.md` does not apply to setup.** That protocol governs *note* changes in `Notes/`.
-   Setup touches configuration, so: **ordinary git commits, no `changes.jsonl` entries, no action
+   Setup touches configuration: **ordinary git commits, no `changes.jsonl` entries, no action
    classification.** Do not log setup steps to the ledger.
-4. **Never delete anything without explicit permission** (project rule). Two phases want to remove
-   something. Both are gated on a direct confirmation, and neither is optional to ask.
-5. **Report honestly at the end.** Phases the user declined are *skipped*, not *failed*. Say which is
-   which, and say what still needs their hand.
+4. **Report honestly at the end.** Say what is configured and what still needs the user's hand.
 
 **Shell assumption.** Commands are written for a POSIX shell. On Windows, Claude Code's Bash tool runs
-through Git Bash, so these work as written. Where a path differs by OS, the difference is called out.
+through Git Bash, so they work as written.
 
-**Your first message to the user.** Before Phase 0, tell them in two sentences what is about to happen:
-roughly ten minutes, you will ask them about four things, and nothing outside this folder changes except
-one profile file in their home directory.
+**Your first message to the user**, before Phase 1, in two sentences: this takes about five minutes, you
+will ask them three things all at once and then do the rest yourself, and nothing outside this folder
+changes except one profile file in their home directory.
 
 ---
 
-## Phase 0 — Preflight
+## Phase 1 — Preflight (silent)
 
-**Goal.** You are in the right folder, and git can actually make a commit.
+**Goal.** You know the four facts that decide what Phase 2 asks and what Phase 3 does.
 
-**Do.**
+**Do.** Run this as one block. **Do not rejoin the lines into an `&&` chain** — `git config user.name`
+exits non-zero when unset, which is precisely the case you are testing for, and a chain would swallow
+the lines after it.
 
 ```bash
 ls CLAUDE.md .claude/rules/ >/dev/null 2>&1 && echo "STRUCTURE OK" || echo "STRUCTURE MISSING"
 git --version || echo "GIT MISSING"
 echo "name=[$(git config user.name)] email=[$(git config user.email)]"
+test -d .git && echo "CLONED" || echo "ZIP"
 ```
 
-**Run it exactly as written — do not rejoin these into one `&&` chain.** `git config user.name` exits
-non-zero when the value is unset, which is precisely the case you are testing for; chained with `&&` it
-would swallow the email check and you would never see it. Each line reports independently.
-
-**Check.** `STRUCTURE OK`, a git version, and **both** brackets non-empty.
+**Check.** You have read all four lines and know: the structure is OK, git exists, whether **either**
+identity bracket is empty, and whether this is a clone or an unzipped copy.
 
 **On fail.**
 
 | Symptom | Meaning | Action |
 |---|---|---|
-| `STRUCTURE MISSING` | Wrong directory, or a zip unpacked one level too deep | Stop. Ask the user to confirm the path they cloned into. Do not create the file. |
-| `GIT MISSING` | git is not installed | Stop. Point them at <https://git-scm.com/downloads>, then restart Claude Code after installing (a program installed after a terminal opened is invisible to it). |
-| Either bracket is **empty** | **The most common blocker.** Git has no identity to stamp on saved versions, and every capture ends in one | Fix it now, before anything else. 🔸 **STOP** and ask for a name and an email, then set them: |
+| `STRUCTURE MISSING` | Wrong folder, or a zip unpacked one level too deep | Stop. Ask the user to confirm the folder they opened. Do not create the file. |
+| `GIT MISSING` | Git is not installed | Stop. Point them at <https://git-scm.com/downloads>, then have them restart Claude Code after installing — a program installed after a session started is invisible to it. |
 
-```bash
-git config --global user.name "Their Name"
-git config --global user.email "their@email.com"
-```
-
-Tell them plainly what this is: a label stamped on each saved version so the history says who made the
-change. It is local, it is not an account, and nothing is sent anywhere. Any email is fine.
-
-**Do not tell them capture will crash without it — that is not reliably true, and the truth is worse.**
-Depending on the machine, Git either refuses to save *or* quietly invents an identity from their
-username and hostname (`jj@Their-MacBook.local`) and stamps that on every note they ever keep. The first
-failure is loud and fixable; the second is silent and permanent. Setting it now avoids both.
-
-Re-run the Check before moving on.
+An empty identity bracket is **not** a failure. It is the trigger for question 1 in the next phase.
 
 ---
 
-## Phase 1 — Give it a version history of its own
+## Phase 2 — Ask, once
 
-**Goal.** The vault tracks its own history, and no path exists by which the user's private notes could
-be pushed back to the template's repository.
+**Goal.** You have the two or three answers only the user can give.
 
-**First find out how they got the files.** The two routes leave the folder in genuinely different
-states, and guessing wrong either fails outright or silently leaves the upstream link in place:
+**Ask all of them in one message, then stop and wait.** Two if their git identity is already set, three
+if it is not. Number them so the reply is easy to match up.
 
-```bash
-test -d .git && echo "CLONED — already has history" || echo "ZIP — no history yet"
-```
+| # | Ask | Only when | Say why, in one line |
+|---|---|---|---|
+| 1 | A name and an email address for Git to stamp on saved versions. | either bracket in Phase 1 was empty | It is a label on each saved version, stored on their own machine. Not an account, nothing is sent anywhere, any email is fine. |
+| 2 | What they want to call their assistant. | always | They will type this name daily. Offer three suggestions **in the same message** so hesitation does not cost a round. |
+| 3 | The three paragraphs about themselves they wrote before the session — paste them in. | always | It is what makes the assistant theirs: it sets how it explains things, how long its answers run, and whether it argues with them. |
 
-### Route A — `ZIP` (the common case)
+**Forbidden in this phase**, all of it, without exception:
 
-A downloaded zip carries **no** `.git` directory, so the folder is not tracked at all yet. There is
-nothing to detach from, and something to start:
+- Asking the questions one at a time.
+- Any follow-up round — clarifying an answer, confirming a spelling, offering to improve their wording.
+- Interviewing them about their background. Question 3 already is the interview; they did it at home.
+- Asking permission to proceed. They already asked you to set this up.
 
-```bash
-git init && git branch -M main
-```
-
-A zip never had an `origin`, so do not remove one and do not add one. Skip to the Check.
-
-### Route B — `CLONED`
-
-The folder still points at the template. 🔸 **STOP** and offer two options. Recommend the first.
-
-| Option | Command | Effect |
-|---|---|---|
-| **Keep history, drop the link** *(recommended)* | `git remote remove origin` | Nothing is deleted. The template's commits stay as backstory; every commit from here is theirs. Push is now impossible until they add their own remote. |
-| **Start history clean** | `rm -rf .git && git init` | A vault whose history begins today. **Destructive and irreversible** — it discards the template's git history. Only on an explicit yes. |
-
-If they choose the second, confirm once more before running it, then re-run Phase 0's `git config` check
-(a fresh `git init` keeps the global identity, but verify rather than assume).
-
-**Check.** Both routes end in the same place — a git repository with no remote:
-
-```bash
-git rev-parse --is-inside-work-tree && git remote -v
-```
-
-**On fail.**
-
-| Symptom | Action |
-|---|---|
-| `not a git repository` | Route A's `git init` did not run. Run it. |
-| Output still lists `origin` | Route B's removal did not run. Repeat it. |
-
-`true` followed by no remote lines is the correct result on both routes.
+**If they have no paragraphs** (did not write them, or pasted the template with `[brackets]` still in
+it): do **not** interview them and do **not** stall the room. Write a two-line profile from whatever
+they said, tell them in one sentence that they can say *"update my profile"* any time, and carry on.
 
 ---
 
-## Phase 2 — Name the agent
+## Phase 3 — Configure and commit (silent)
 
-**Goal.** `CLAUDE.md` line 1 carries a name the user chose.
+**Goal.** Their answers are on disk and the working tree is clean.
 
-**Do.** Line 1 currently reads `# [Please rename your agent] — Knowledge Base Agent`.
+**Do**, in this order:
 
-🔸 **STOP.** Ask what they want to call their assistant. This is not decoration: they will type this
-name daily, and it is the difference between *"ask Ada what I know about X"* and *"ask the knowledge
-base agent"*. Offer two or three suggestions if they hesitate, but **the choice is theirs** — the
-`agent ≠ author` rule in `CLAUDE.md` covers exactly this kind of naming.
+1. **Git identity**, only if you asked question 1:
 
-Edit line 1 only. Change nothing else in the file.
+   ```bash
+   git config --global user.name "Their Name"
+   git config --global user.email "their@email.com"
+   ```
+
+   Do this first. Everything below ends in a commit, and a commit without an identity either fails
+   loudly or quietly stamps an invented one (`them@Their-MacBook.local`) on every note they ever keep.
+
+2. **Version history**, branching on Phase 1's last line. Both routes end the same way: a git repository
+   with no remote, so there is no path by which their private notes could reach the template's repo.
+
+   | Phase 1 said | Run | Why |
+   |---|---|---|
+   | `ZIP` | `git init && git branch -M main` | A zip carries no history and never had a remote. Nothing to detach. |
+   | `CLONED` | `git remote remove origin` | Keeps the template's commits as backstory; every commit from here is theirs. Nothing is deleted. |
+
+3. **Name the agent.** `CLAUDE.md` line 1 currently reads `# [Please rename your agent] — Knowledge Base
+   Agent`. Put their answer to question 2 in place of the bracketed text. **Edit line 1 only.**
+
+4. **Write their profile** to `~/.claude/CLAUDE.md` (on Windows, the same path in Git Bash). Create the
+   directory if it is missing.
+
+   **Paste their paragraphs in verbatim.** Do not rewrite them, do not tidy the grammar, do not add
+   sections they did not write, do not append a note explaining what you did. Their words, their file —
+   the `agent ≠ author` rule in `CLAUDE.md` covers exactly this. If the file already exists with real
+   content in it, **do not overwrite**: tell them it is there, leave it alone, and move on.
+
+5. **Commit:**
+
+   ```bash
+   git add -A && git commit -m "chore: configure vault (agent name, profile, history)"
+   ```
+
+   Without this, `atomic-operation.md` makes the agent report a dirty tree as an interrupted operation
+   at the start of **every** session until something commits.
 
 **Check.**
 
 ```bash
 head -1 CLAUDE.md
-```
-
-**On fail.** Square brackets still present → the edit did not land. Re-read the line and retry.
-
----
-
-## Phase 3 — The user-level profile
-
-**Goal.** A personal profile exists at the user level, filled in with *their* real details, so every
-Claude Code session calibrates to them.
-
-**Why this is the highest-value phase.** Without it, the agent guesses at their background and re-learns
-their preferences every session. With it, it knows whether to explain a term or assume it, and how
-directly to push back.
-
-**Do.**
-
-1. Determine the target path:
-
-   | OS | Path |
-   |---|---|
-   | macOS / Linux / WSL | `~/.claude/CLAUDE.md` |
-   | Windows | `%USERPROFILE%\.claude\CLAUDE.md` (as `~/.claude/CLAUDE.md` in Git Bash) |
-
-2. **Check whether it already exists.** If it does: **do not overwrite it.** Read it, show the user what
-   is already there, and 🔸 **STOP** to ask whether to merge anything from the template into it. Their
-   existing profile wins by default.
-
-3. If it does not exist, create the directory and copy the template:
-
-   ```bash
-   mkdir -p ~/.claude && cp user_level_file_template/CLAUDE.md ~/.claude/CLAUDE.md
-   ```
-
-4. **Fill it in by interviewing them, not by handing them a form.** A template with `<Your Name>` in it
-   is worse than nothing, and a non-technical user will not fill it in alone. Ask about three things,
-   conversationally, one at a time:
-
-   | Ask about | What you are listening for |
-   |---|---|
-   | **Background** | What they do, and what they already know, so explanations land at the right level. |
-   | **Working mode** | How much time they have; whether they want thorough or quick. |
-   | **Communication** | Length, tone, and whether they want to be disagreed with. |
-
-   Then write the file in their words and show it to them for approval before saving. Be specific on
-   their behalf: *"Explain things simply"* is weak; *"I have never written code, use everyday words and
-   skip the jargon"* is strong. Delete any template section that does not apply to them, and remove all
-   scaffolding: the `<Your Name>` placeholder, every `> **Guidance:**` note, and any example persona
-   they did not keep.
-
-**Check.**
-
-```bash
-test -f ~/.claude/CLAUDE.md \
-  && ! grep -q "<Your Name>\|> \*\*Guidance:\*\*" ~/.claude/CLAUDE.md \
-  && echo "PROFILE OK" || echo "PROFILE INCOMPLETE"
-```
-
-Prints `PROFILE OK`.
-
-**Read the printed word, not the exit code.** This check deliberately prints a verdict because the
-obvious alternative (`grep -c`) exits **1** when it finds zero matches, which is the *passing* case.
-Both outcomes here exit 0; only the text distinguishes them.
-
-**On fail.** `PROFILE INCOMPLETE` means one of two things: the file does not exist, or scaffolding is
-still in it. Either way setup is *not* complete. Finish the personalization before continuing. This same
-check gates Phase 7.
-
----
-
-## Phase 4 — The first commit
-
-**Goal.** A clean working tree.
-
-**Why this is not optional.** `atomic-operation.md` tells the agent to run `git status` at the start of
-every session and to treat a dirty tree as an interrupted operation that must be surfaced to the user.
-A configured-but-never-committed vault therefore reports a problem *every single session* until
-something commits. This phase is what stops that.
-
-**Do.**
-
-```bash
-git add -A && git commit -m "chore: configure vault (agent name, profile, history started)"
-```
-
-**Check.**
-
-```bash
+test -f ~/.claude/CLAUDE.md && echo "PROFILE WRITTEN" || echo "PROFILE MISSING"
 git status --short && git log --oneline -1
 ```
+
+Line 1 carries their name with no square brackets, `PROFILE WRITTEN`, an empty status, one commit.
 
 **On fail.**
 
 | Symptom | Action |
 |---|---|
-| `Please tell me who you are` | Phase 0's identity check was skipped or did not stick. Go back and set it. |
-| `nothing to commit` | Phases 1–3 made no local change. Verify each landed rather than moving on. |
-
-Working tree clean, one commit listed → done.
-
----
-
-## Phase 5 — Semantic search *(optional)*
-
-**Goal.** Either semantic search works, or the user has knowingly declined it.
-
-**Why it is worth offering.** Without it, search matches the words they typed. With it, a note about
-"keeping options open" surfaces when they later ask about "flexibility". Three things lean on it:
-answering questions from their notes, catching a duplicate they wrote in different words, and finding
-two notes that say the same thing during a maintenance pass.
-
-🔸 **STOP.** Ask whether to set it up now. Make declining genuinely comfortable: **everything works
-without it**, it degrades to word search, and it can be added any time. If they decline, skip to Phase 6
-and record it as *skipped*, not failed.
-
-**Do.**
-
-1. Check for `uv`:
-
-   ```bash
-   uv --version
-   ```
-
-   Missing? Give them the line for their OS, then tell them to **quit Claude Code and their terminal
-   completely and reopen** before continuing. This is not superstition: a terminal resolves where
-   programs live when it opens, so one that was already running cannot see a newly installed tool.
-
-   | OS | Install |
-   |---|---|
-   | macOS (Homebrew) | `brew install uv` |
-   | macOS / Linux | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-   | Windows (PowerShell) | `powershell -c "irm https://astral.sh/uv/install.ps1 \| iex"` |
-
-2. Create the environment and install into it. **The directory must be named exactly `.venv`** — the
-   `rag-search` skill resolves its interpreter relative to that name, and any other name means a silent
-   fall back to word search.
-
-   ```bash
-   uv venv .venv && uv pip install -r requirements.txt && cp .env.example .env
-   ```
-
-3. Configure `.env`. 🔸 **STOP** and ask which mode they want:
-
-   | Mode | Set | Reality |
-   |---|---|---|
-   | **Offline** | `EMBED_PROVIDER=mock` | No key, no cost, no network. Proves the wiring works. **Not real search** — the results are consistent but meaningless. |
-   | **Live** | `EMBED_PROVIDER=api` | Real meaning-based search. Needs an embeddings provider account and an API key. |
-
-   For live mode they also need `EMBED_BASE_URL`, `EMBED_API_KEY`, `EMBED_MODEL`, `EMBED_DIM`. OpenAI
-   defaults are already in `.env.example` and are a fine starting point. Before they paste a key into
-   the chat, tell them the alternative: they can put it into `.env` themselves and you will not see it.
-   Either way `.env` is gitignored, so the key never enters git history.
-
-   **If they do not have a key, walk them through getting one — do not just name the requirement.**
-   This is the step most likely to end the session, so spend the time. Cover these in order:
-
-   | Point | What to tell them |
-   |---|---|
-   | **What they are paying for** | Turning each note into a numeric fingerprint so meaning-matching works. Only that. It is charged when the index is built or refreshed, never while they type, read, or ask. |
-   | **Roughly what it costs** | Fingerprinting is far cheaper than having a model write or reason. For one person's notes a small top-up typically lasts a long time. Give the shape, not a number — rates change, and point them at the provider's pricing page. |
-   | **A subscription is not a key** | **State this explicitly.** ChatGPT Plus, and equally a paid Claude plan, include nothing here. API access is a separate account with a separate bill. This is the single most common misunderstanding. |
-   | **Money before key** | At <platform.openai.com> → Settings → Billing: add a payment method and buy a small amount of credit *first*. On a zero balance the key exists but every request is refused, and the error does not mention the balance. |
-   | **Auto-recharge** | Suggest leaving it off unless they want it. Worst case then is that it stops working, never a surprise bill. |
-   | **Make the key** | At <platform.openai.com/api-keys> → **Create new secret key**, named something recognisable. Defaults are correct. |
-   | **Copy it immediately** | It is shown once. Closing the dialog without copying means deleting it and making another. |
-   | **Handle it like a card** | It starts with `sk-`. It belongs in `.env` and nowhere else — never an email, a screenshot, or a chat window. |
-
-   Any OpenAI-compatible provider works; only the address and model name change. Offer that only if they
-   raise it — a second option here is a decision they do not need.
-
-   One trap worth stating: `EMBED_SEND_DIMENSIONS=true` suits OpenAI v3 models. For any other provider
-   set it `false`, and then `EMBED_DIM` must exactly match that model's own dimension.
-
-4. Build the index:
-
-   ```bash
-   PY=$([ -x .venv/bin/python ] && echo .venv/bin/python || echo .venv/Scripts/python.exe)
-   "$PY" .claude/skills/rag-search/scripts/reindex.py auto
-   ```
-
-**Check.** The command reports how many notes it processed and a `.rag-index/` directory appears.
-
-**Expect 0 notes on a fresh vault, and say so.** `Notes/` starts empty, so there is genuinely nothing to
-index yet. That is a correct result, not a failure. Tell the user the index is refreshed manually, and
-they should ask for a reindex once they have written some notes.
-
-**On fail.** `RAG_UNAVAILABLE` → three causes, in order of likelihood: the venv is not named exactly
-`.venv`; `.env` is missing or says `api` with no key; a value in `.env` is wrong. Word search keeps
-working throughout, so this is narrower, not broken.
+| Square brackets still on line 1 | The edit did not land. Redo step 3. |
+| `PROFILE MISSING` | The directory did not exist. `mkdir -p ~/.claude`, then write it again. |
+| `Please tell me who you are` | Step 1 was skipped or did not stick. Set the identity, then commit. |
+| `nothing to commit` | Steps 2–4 changed nothing. Verify each landed rather than moving on. |
 
 ---
 
-## Phase 6 — Outside connectors *(optional)*
+## Phase 4 — Hand over
 
-**Goal.** Either the services holding their existing material are connected, or they have declined.
+**Goal.** They know it worked and what to do next.
 
-🔸 **STOP.** Ask whether their notes already live somewhere else (Notion, Drive, Slack). If not, skip
-this phase entirely — nothing else depends on it.
+**Do.** Tell them these four things, briefly, in this order:
 
-**First work out which surface they are on.** This decides everything below, and getting it wrong wastes
-their time on a command that cannot exist:
+1. **Start a new chat in this same folder.** Their profile is read when a conversation begins, so the
+   one they are in now has not seen it. The new chat is where it takes effect.
+2. **In that new chat, ask it two questions.** *"What do you know about me?"* — the answer should reflect
+   their own paragraphs; generic flattery means the profile is not being read, so check the path.
+   *"Which agent are you, and what are you not allowed to do?"* — a correct answer names Recorder and
+   says it does not merge or split notes.
 
-```bash
-command -v claude >/dev/null 2>&1 && echo "CLI AVAILABLE" || echo "NO CLI — desktop app"
-```
+   > Do not send them to `/context` for this. It renders an interactive panel, and panel commands behave
+   > differently in the desktop app's Code tab, so the instruction fails for exactly the people most
+   > likely to need it. These two questions test the same thing by observing behaviour, on every surface.
+3. **Open the folder in Obsidian**, via *Open folder as vault*, pointed at this directory. The vault is
+   plain markdown so any editor works, but this is the reading surface it is built around: the graph,
+   backlinks, and wikilinks rendered properly. It changes nothing about how the agent works.
+4. **Their first real move**: talk to it about something they are actually working through, then say
+   *"capture that as a note."*
 
-The **desktop app ships Claude Code without installing the `claude` command-line tool**. If this prints
-`NO CLI`, every `claude mcp …` command below will fail with *command not found*, and that is expected,
-not a broken install.
+Then mention `NEXT.md` in one line: the optional extras — searching by meaning, and connecting Notion or
+Drive — are set up there, in their own time, and nothing needs them today.
 
-**Route A — `NO CLI` (desktop app).** You cannot add the connector for them, so do not try. Hand them
-the steps instead: connectors have a graphical setup flow in the app. Tell them to open **Settings →
-Connectors**, find their service, and follow the sign-in. Services not listed there need an entry in a
-settings file, which is worth doing only if they actually need one — offer, do not assume.
-
-**Route B — `CLI AVAILABLE`.** Add it yourself, using Notion as the worked shape:
-
-```bash
-claude mcp add --transport http notion https://mcp.notion.com/mcp
-```
-
-Reading it left to right: add a connector, it talks over http, call it `notion`, here is its address.
-Only the last two change per service. Addresses come from <https://claude.ai/directory> — look the
-service up rather than guessing a URL. `claude mcp remove <name>` undoes it.
-
-**Then hand the sign-in back to them, on either route.** Adding a connector only records *where* the
-service is; it grants no access. The sign-in happens in a browser and only they can complete it.
-
-Say plainly what they are agreeing to: signing in lets the assistant read that account. Connect only
-services they are comfortable with it seeing.
-
-**Check.** Route B: `claude mcp list` names it. Route A: ask them to confirm the app shows it connected.
-
-**On fail.** `failed to connect` → the address is wrong; check it against the directory. `command not
-found` on Route B → you misread the surface; go back to Route A.
-
----
-
-## Phase 7 — Remove the setup scaffolding
-
-**Goal.** `user_level_file_template/` is gone, but **only** once the profile it exists to seed is real.
-
-**Do.**
-
-1. **Re-run Phase 3's check.** Anything other than `PROFILE OK` means setup is **not** complete: say so
-   and **do not delete**. This gate is not a formality — deleting the template before the profile is
-   written destroys the only copy the user has.
-
-   ```bash
-   test -f ~/.claude/CLAUDE.md \
-     && ! grep -q "<Your Name>\|> \*\*Guidance:\*\*" ~/.claude/CLAUDE.md \
-     && echo "PROFILE OK" || echo "PROFILE INCOMPLETE"
-   ```
-2. Gate passed → 🔸 **STOP.** Show them exactly what will be removed and ask for a direct confirmation.
-   The project's *never delete without explicit permission* rule applies in full.
-3. On their yes:
-
-   ```bash
-   rm -rf user_level_file_template/
-   git add -A && git commit -m "chore: remove user-level template after setup"
-   ```
-
-   Its own commit, separate from Phase 4.
-
-**Check.** `ls user_level_file_template` reports no such file, and `git status --short` is clean.
-
----
-
-## Phase 8 — Verify and hand over
-
-**Goal.** The user has seen it work, and knows what to do next.
-
-**Do.**
-
-1. **Confirm the vault's instructions loaded — by behaviour, not by a command.** Have them ask:
-   *"Which agent are you, and what are you not allowed to do?"* A correct answer names Recorder, says it
-   handles conversation and capture, and says it does **not** merge or split notes. A vague or generic
-   answer means `CLAUDE.md` did not load, and nothing below will behave properly.
-
-2. **Confirm their profile loaded, the same way.** Have them ask: *"What do you know about me?"* The
-   answer should reflect what they told you in Phase 3. Generic flattery means the profile is not being
-   read — check the path and the exact filename.
-
-   > **Do not send them to `/context` for this.** It renders an interactive panel, and panel commands
-   > behave differently in the desktop app's Code tab, so the instruction fails for exactly the people
-   > most likely to need it. The two questions above test the same thing by observing behaviour, and
-   > they work on every surface. If they are on the CLI and want the raw list, `/context` is there —
-   > offer it as extra, never as the check.
-3. **Point them at Obsidian.** The vault is plain markdown, so any editor works, but Obsidian is the
-   reading surface this is built around: graph view, backlinks, and the wikilinks rendered properly.
-   *Open folder as vault*, pointed at this directory. Download: <https://obsidian.md>. It is optional
-   and changes nothing about how the agent works.
-4. **Write the closing report.** Cover exactly four things:
-
-   | Report | Content |
-   |---|---|
-   | **Configured** | Which phases completed. |
-   | **Skipped** | Which optional phases they declined, and how to add each later. |
-   | **Needs them** | Anything still in their hands — an MCP sign-in, an API key, a reindex. |
-   | **Next** | One concrete first move: talk about something they are working through, then say *"capture that as a note."* |
-
-**Check.** Both questions in steps 1 and 2 came back correct, and they have a stated next action.
+**Check.** You have said all four. Setup is done.
 
 ---
 
@@ -463,11 +185,9 @@ found` on Route B → you misread the surface; go back to Route A.
 | Path | Change |
 |---|---|
 | `CLAUDE.md` | Line 1 only: the agent's name |
-| `~/.claude/CLAUDE.md` | Created and filled in (**the only file written outside this folder**) |
+| `~/.claude/CLAUDE.md` | Created from their paragraphs (**the only file written outside this folder**) |
 | `.git/` | Created (zip route), or `origin` removed (clone route) |
-| `.env` | Created from `.env.example` *(optional phase)* |
-| `.venv/`, `.rag-index/` | Created; both gitignored *(optional phase)* |
-| `user_level_file_template/` | Deleted, on confirmation, last |
+| Global git config | `user.name` and `user.email`, only if they were unset |
 
-Untouched: every file in `.claude/rules/`, `.claude/skills/`, `.claude/agents/`, and all four content
-folders. Setup configures the vault; it does not modify how it thinks.
+Untouched: every file in `.claude/`, and all five content folders. Setup configures the vault; it does
+not modify how it thinks.
