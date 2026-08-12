@@ -167,14 +167,10 @@ Line 1 carries their name with no square brackets, `PROFILE WRITTEN`, an empty s
 
 1. **Start a new chat in this same folder.** Their profile is read when a conversation begins, so the
    one they are in now has not seen it. The new chat is where it takes effect.
-2. **In that new chat, ask it two questions.** *"How should you talk to me, and why?"* — the answer
-   should quote their own paragraphs back at them; generic flattery means the profile is not being
-   read, so check the path. *"Which agent are you, and what are you not allowed to do?"* — a correct
-   answer names Recorder and says it does not merge or split notes.
-
-   > Ask it this way round, not *"what do you know about me?"*. The vault ships with example content
-   > belonging to somebody else, and that question invites the agent to answer from `Profile/` instead
-   > of from the profile you just wrote.
+2. **In that new chat, ask it two questions.** *"What do you know about me?"* — the answer should
+   reflect their own paragraphs back at them; generic flattery means the profile is not being read, so
+   check the path. *"Which agent are you, and what are you not allowed to do?"* — a correct answer
+   names Recorder and says it does not merge or split notes.
 
    > Do not send them to `/context` for this. It renders an interactive panel, and panel commands behave
    > differently in the desktop app's Code tab, so the instruction fails for exactly the people most
@@ -182,15 +178,16 @@ Line 1 carries their name with no square brackets, `PROFILE WRITTEN`, an empty s
 3. **Open the folder in Obsidian**, via *Open folder as vault*, pointed at this directory. The vault is
    plain markdown so any editor works, but this is the reading surface it is built around: the graph,
    backlinks, and wikilinks rendered properly. It changes nothing about how the agent works.
-4. **The example content belongs to somebody else.** The vault ships full rather than empty, so there
-   is something to search and maintain from the first minute. Two different situations:
+4. **The example content belongs to somebody else.** `Notes/` and `Streams/` ship full rather than
+   empty, so there is something to search and maintain from the first minute. It is a sample student's
+   material, it is harmless, and it can stay as practice for as long as it is useful. When they want it
+   gone: *"delete the example notes."* Nothing is deleted without their say-so.
 
-   | What | Whose | What to tell them |
-   |---|---|---|
-   | `Notes/` and `Streams/` | a sample student's | Harmless. Keep them as practice material for as long as they are useful, then say *"delete the example notes"*. |
-   | `Profile/About Me.md` | a sample student's | **Replace this early.** It is the folder the agent treats as standing fact about *them*, so a stranger's version in it is actively wrong. *"This profile is not mine, replace it with mine."* |
-
-   Nothing is deleted without their say-so, in either case.
+   **`Profile/` is the exception that ships empty**, and it is worth one sentence on why. It is the only
+   corpus git is told never to save — see `.gitignore` under *Personal record* — because names,
+   employers, education, and visa status do not belong in a history that might one day be pushed
+   somewhere. Their notes are versioned; their personal record is not. The first entry is theirs to add
+   whenever they want one.
 
 5. **Their first real move**: talk to it about something they are actually working through, then say
    *"capture that as a note."*
