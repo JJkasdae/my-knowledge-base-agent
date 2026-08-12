@@ -34,6 +34,8 @@ Three groups: bring sources in, find and read, author Obsidian content. The **Ne
 | Skill | Works with | Needs |
 |---|---|---|
 | [`obsidian-markdown`](obsidian-markdown/SKILL.md) | Obsidian-flavored markdown: wikilinks, callouts, embeds, properties, tags. | — |
+| [`obsidian-bases`](obsidian-bases/SKILL.md) | `.base` files — database-like table/card views with filters & formulas. | — |
+| [`json-canvas`](json-canvas/SKILL.md) | `.canvas` files — visual canvases, mind maps, flowcharts. | — |
 
 > Most skills need nothing beyond Claude Code. The exceptions are in the **Needs** column — set up `rag-search` via [setup §3](../../README.md); the rest are only required if you actually invoke that skill.
 

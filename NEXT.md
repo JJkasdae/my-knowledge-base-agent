@@ -156,6 +156,31 @@ comfortable with it seeing.
 
 ---
 
+## 5. Teach it a routine of your own
+
+Connecting Notion gives the assistant the *ability* to read and write your Notion. What it does not give
+you is the **shape**: which pages, how they should be broken up, what ends up in `Notes/` and what gets
+thrown away. That part is different for everybody, which is why this repo does not ship an opinion about
+it.
+
+A **skill** is where you write that shape down once so you never have to explain it again. It is a
+folder with a markdown file in it, in the same plain English as everything else here.
+
+You do not have to write it yourself:
+
+```
+Read .claude/skills/creating-skills.md, then interview me about how I
+want my Notion reading list pulled into this vault. Write the skill.
+```
+
+It asks what it needs, writes the file, and from then on *"pull in my reading list"* runs your procedure
+rather than improvising a new one. The same trick works for anything you find yourself explaining twice:
+a weekly review format, how to file lecture notes, how you like meeting notes structured.
+
+This is the point at which the thing stops being software you were handed and starts being yours.
+
+---
+
 ## Things it can already do, no setup needed
 
 | Say this | What happens |
