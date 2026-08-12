@@ -1,7 +1,7 @@
 # NEXT.md — after the workshop
 
-> **Nothing in this file is required.** Setup is finished and the vault works. These are the four things
-> worth doing next, in the order they are worth doing.
+> **Nothing in this file is required.** Setup is finished and the vault works. Three things are worth
+> doing next, in this order, and two more are here for when you want them.
 
 **Do not work through this by hand.** Open this folder in Claude Code and say:
 
@@ -47,21 +47,7 @@ not a hack; it is the design. The files are yours.
 
 ---
 
-## 2. Run the Maintainer, once you have some notes
-
-Around fifteen notes is when this gets interesting. Say:
-
-```
-Run the Maintainer over my notes.
-```
-
-It reads everything at once and comes back with proposals: two notes saying the same thing, one note
-that has quietly become two ideas, and — the good one — a theme running through several notes that you
-never named. It changes nothing. Every proposal waits for your yes.
-
----
-
-## 3. Search by meaning
+## 2. Turn on real search
 
 Right now, search matches the words you typed. With this on, a note about *"keeping my options open"*
 surfaces when you later ask about *"flexibility"*. Three things lean on it: answering questions from
@@ -135,7 +121,46 @@ keeps working throughout, so this is narrower, not broken.
 
 ---
 
-## 4. Connect Notion, Drive, or Slack
+## 3. Teach it a routine of your own
+
+There is a difference between what the assistant *can* do and the **shape** you want it done in: which
+files, how they get broken up, what ends up in `Notes/` and what gets thrown away. That part is
+different for everybody, which is why this repo does not ship an opinion about it.
+
+A **skill** is where you write that shape down once so you never have to explain it again. It is a
+folder with a markdown file in it, in the same plain English as everything else here.
+
+You do not have to write it yourself:
+
+```
+Read .claude/skills/creating-skills.md, then interview me about how I
+want my lecture notes filed in this vault. Write the skill.
+```
+
+It asks what it needs, writes the file, and from then on *"file these lecture notes"* runs your
+procedure rather than improvising a new one. The same trick works for anything you find yourself
+explaining twice: a weekly review format, how you like meeting notes structured, how to pull a reading
+list out of Notion.
+
+This is the point at which the thing stops being software you were handed and starts being yours.
+
+---
+
+# Two more, whenever you want them
+
+## Run the Maintainer, once you have some notes
+
+Around fifteen notes is when this gets interesting. Say:
+
+```
+Run the Maintainer over my notes.
+```
+
+It reads everything at once and comes back with proposals: two notes saying the same thing, one note
+that has quietly become two ideas, and — the good one — a theme running through several notes that you
+never named. It changes nothing. Every proposal waits for your yes.
+
+## Connect Notion, Drive, or Slack
 
 Worth doing only if your notes already live somewhere else. Nothing depends on it.
 
@@ -154,30 +179,8 @@ than guessing a URL. `claude mcp remove <name>` undoes it.
 access. Signing in lets the assistant read that account, so connect only the services you are
 comfortable with it seeing.
 
----
-
-## 5. Teach it a routine of your own
-
-Connecting Notion gives the assistant the *ability* to read and write your Notion. What it does not give
-you is the **shape**: which pages, how they should be broken up, what ends up in `Notes/` and what gets
-thrown away. That part is different for everybody, which is why this repo does not ship an opinion about
-it.
-
-A **skill** is where you write that shape down once so you never have to explain it again. It is a
-folder with a markdown file in it, in the same plain English as everything else here.
-
-You do not have to write it yourself:
-
-```
-Read .claude/skills/creating-skills.md, then interview me about how I
-want my Notion reading list pulled into this vault. Write the skill.
-```
-
-It asks what it needs, writes the file, and from then on *"pull in my reading list"* runs your procedure
-rather than improvising a new one. The same trick works for anything you find yourself explaining twice:
-a weekly review format, how to file lecture notes, how you like meeting notes structured.
-
-This is the point at which the thing stops being software you were handed and starts being yours.
+Connecting it gives the assistant the ability. Deciding what it should *do* with that ability is
+number 3 above.
 
 ---
 
