@@ -14,4 +14,4 @@ A hub plus a few cross-linked notes. Unlike [`Notes/`](../Notes/), this isn't kn
 
 - **Bound by single source of truth, with nothing sweeping behind it.** `Profile/` is a bound corpus that runs no action machinery — no action classification, no `changes.jsonl` entry, no Maintainer pass. Nothing catches a duplicate later, so the whole check happens at the moment the agent writes.
 - **Structure is yours.** The flat-notes rule governs `Notes/`; here a hub plus a handful of topic notes is usually enough.
-- Starts empty (just a `.gitkeep`).
+- **Starts with an example, and that example is not you.** `About Me.md` belongs to the sample vault's owner. Replace it with your own facts before anything else here is worth reading: it is the one folder where leftover example content actively misleads the agent about who it is talking to.

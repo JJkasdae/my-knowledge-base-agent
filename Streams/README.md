@@ -16,4 +16,4 @@ A stream is something that arrives on a schedule or accumulates as you work: an 
 - **Not indexed for search.** [Semantic search](../.claude/skills/rag-search/SKILL.md) skips this folder, so a stale entry can never surface as an answer.
 - **No log, no classification.** Stream writes carry no `changes.jsonl` entry and no action verdict.
 - **Distil, don't promote.** When an entry yields something worth keeping, capture it as a note in [`Notes/`](../Notes/) through the normal flow. The file stays put; the knowledge moves.
-- Starts empty (just a `.gitkeep`).
+- **Starts with two example series**: `Job Applications/` (a tracker, the tabular default) and `Journal/` (dated prose). They belong to the sample vault, they are not yours, and deleting them costs nothing.

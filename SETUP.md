@@ -14,8 +14,8 @@ order. Target: **five minutes**, and **one** point where you ask the user anythi
 
 1. **Ask everything in Phase 2, in a single message. Nothing before it, nothing after it.** Phases 1, 3
    and 4 are silent: run them, report what happened, do not stop for approval. This is not a style
-   preference — this file is run by a roomful of people at once, and an agent that asks one extra
-   question puts its user a minute behind everyone else.
+   preference. Setup is judged on whether it finishes, every extra round is somewhere it can stall,
+   and the questions genuinely worth asking are already listed in Phase 2.
 2. **Never skip a Check.** A phase is done when its check passes, not when you ran the command.
 3. **`atomic-operation.md` does not apply to setup.** That protocol governs *note* changes in `Notes/`.
    Setup touches configuration: **ordinary git commits, no `changes.jsonl` entries, no action
@@ -80,9 +80,17 @@ if it is not. Number them so the reply is easy to match up.
 - Interviewing them about their background. Question 3 already is the interview; they did it at home.
 - Asking permission to proceed. They already asked you to set this up.
 
-**If they have no paragraphs** (did not write them, or pasted the template with `[brackets]` still in
-it): do **not** interview them and do **not** stall the room. Write a two-line profile from whatever
-they said, tell them in one sentence that they can say *"update my profile"* any time, and carry on.
+**If they have no paragraphs** — they never wrote any, or they pasted the template with `[brackets]`
+still in it — do **not** interview them and do **not** go round again. Put these three prompts in one
+message and ask for all three answered in a single reply:
+
+1. Who you are, what you are studying or doing, what you already know well, and what you are new to.
+2. How much time you usually get in one sitting, and whether you want quick answers or thorough ones.
+3. How long answers should be, how formal or casual, and whether you want to be told when you are wrong.
+
+Whatever comes back is the profile. Write it in their words, tell them in one sentence that *"update my
+profile"* changes it any time, and carry on. A thin profile that exists beats a good one that never got
+written.
 
 ---
 
@@ -159,10 +167,14 @@ Line 1 carries their name with no square brackets, `PROFILE WRITTEN`, an empty s
 
 1. **Start a new chat in this same folder.** Their profile is read when a conversation begins, so the
    one they are in now has not seen it. The new chat is where it takes effect.
-2. **In that new chat, ask it two questions.** *"What do you know about me?"* — the answer should reflect
-   their own paragraphs; generic flattery means the profile is not being read, so check the path.
-   *"Which agent are you, and what are you not allowed to do?"* — a correct answer names Recorder and
-   says it does not merge or split notes.
+2. **In that new chat, ask it two questions.** *"How should you talk to me, and why?"* — the answer
+   should quote their own paragraphs back at them; generic flattery means the profile is not being
+   read, so check the path. *"Which agent are you, and what are you not allowed to do?"* — a correct
+   answer names Recorder and says it does not merge or split notes.
+
+   > Ask it this way round, not *"what do you know about me?"*. The vault ships with example content
+   > belonging to somebody else, and that question invites the agent to answer from `Profile/` instead
+   > of from the profile you just wrote.
 
    > Do not send them to `/context` for this. It renders an interactive panel, and panel commands behave
    > differently in the desktop app's Code tab, so the instruction fails for exactly the people most
@@ -170,13 +182,23 @@ Line 1 carries their name with no square brackets, `PROFILE WRITTEN`, an empty s
 3. **Open the folder in Obsidian**, via *Open folder as vault*, pointed at this directory. The vault is
    plain markdown so any editor works, but this is the reading surface it is built around: the graph,
    backlinks, and wikilinks rendered properly. It changes nothing about how the agent works.
-4. **Their first real move**: talk to it about something they are actually working through, then say
+4. **The example content belongs to somebody else.** The vault ships full rather than empty, so there
+   is something to search and maintain from the first minute. Two different situations:
+
+   | What | Whose | What to tell them |
+   |---|---|---|
+   | `Notes/` and `Streams/` | a sample student's | Harmless. Keep them as practice material for as long as they are useful, then say *"delete the example notes"*. |
+   | `Profile/About Me.md` | a sample student's | **Replace this early.** It is the folder the agent treats as standing fact about *them*, so a stranger's version in it is actively wrong. *"This profile is not mine, replace it with mine."* |
+
+   Nothing is deleted without their say-so, in either case.
+
+5. **Their first real move**: talk to it about something they are actually working through, then say
    *"capture that as a note."*
 
 Then mention `NEXT.md` in one line: the optional extras — searching by meaning, and connecting Notion or
 Drive — are set up there, in their own time, and nothing needs them today.
 
-**Check.** You have said all four. Setup is done.
+**Check.** You have said all five. Setup is done.
 
 ---
 

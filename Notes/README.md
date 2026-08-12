@@ -10,12 +10,12 @@ This is the heart of the vault. The agents read, search, link, and maintain what
 - **Flat, no sub-folders.** Every note sits directly in `Notes/`. Structure comes from `[[wikilinks]]`, not directories — no folders, indexes, MOCs, tags, or properties unless you ask or a template requires them.
 - **Connected, not copied.** Relationships between notes are always `[[wikilinks]]`; never inline a copy of another note's content.
 
-The folder starts empty (just a `.gitkeep`). Your notes accumulate here as you capture.
+The folder starts with ten example notes, so there is something real to search, question, and maintain from the first minute. They are someone else's, and deleting them is a perfectly good first change to make. Your own notes accumulate here as you capture.
 
 ## How notes get here
 
 - **Recorder creates them** at your explicit capture, via the **Creation** action — picking a [template](../Templates/) for the content shape, then writing the note as one [atomic operation](../.claude/rules/atomic-operation.md) (edit → log → commit).
-- **The Maintainer reshapes them** over time — splitting (Fission), merging (Convergence), or surfacing a missing parent note (Emergence). See [how your knowledge restructures itself](../README.md#how-your-knowledge-restructures-itself).
+- **The Maintainer reshapes them** over time — splitting (Fission), merging (Convergence), or surfacing a missing parent note (Emergence). See [two assistants, one folder](../README.md#two-assistants-one-folder).
 
 Both follow the [rules](../.claude/rules/) — the discipline that keeps this folder coherent (atomicity, single source of truth, wikilinks) lives there, not here.
 
