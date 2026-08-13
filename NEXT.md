@@ -347,19 +347,52 @@ you would recommend changing for someone who wants to be more careful.
 
 ### The ledger — `.claude/log/changes.jsonl`
 
-Every change to `Notes/` is appended here as one line: when, which assistant, which action,
-which notes, **the reasoning behind it**, and whether you approved or rejected it.
+**It will not exist until your first capture.** The folder ships empty; the file appears the
+first time a note is written.
 
-It is not a debugging artefact. It is the audit trail: months later you can ask *why is this
-note shaped like this* and get a real answer instead of a guess. It is also how the
-Maintainer avoids proposing something you already turned down.
+**`.jsonl` means one record per line.** Not one big document — a list, where each line is a
+self-contained entry. That shape exists so a new record can be added to the end without
+rewriting or re-reading everything before it. It looks like code when you open it. It is
+not; it is a list of events.
 
-**Ask it:**
+One line records: **when**, which assistant, which action, which notes, **the reasoning
+behind it**, whether it went ahead or was rejected, and — when you said no — **your own
+reason in your words**.
+
+**It is append-only.** Entries are never edited and never removed. A record you can go back
+and change is not an audit trail, so this one is not changeable. If something was wrong, a
+new line says so; the old line stays.
+
+**The same event is recorded twice, on purpose.** Every entry here has exactly one matching
+Git commit, whose message carries the short version:
+
+```
+[executed] Creation: Weekly Review | first note on the Friday habit
+```
+
+Git history is the readable version you scroll through. The ledger is the complete version,
+carrying the full reasoning the commit message has no room for.
+
+**Only `Notes/` is logged.** Changes to `Profile/`, `Streams/` or `Sources/` do not appear
+here — those folders are still bound by single source of truth, but the ledger and the
+action machinery cover the concept notes alone.
+
+Two uses. The obvious one:
 
 ```
 Read .claude/log/changes.jsonl and summarise everything that has
 happened to my notes so far, in plain English, oldest first.
 ```
+
+And the one actually worth doing, once you have said no to a few things:
+
+```
+Read .claude/log/changes.jsonl and find every proposal I rejected.
+For each one, tell me what my reason was, and whether you think I was
+right.
+```
+
+That second one is where `lessons.md` below comes from.
 
 ### Learned lessons — `.claude/maintainer/lessons.md`
 
