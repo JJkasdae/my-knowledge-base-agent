@@ -559,7 +559,7 @@ around in every conversation.
 The last three Obsidian ones are published by Obsidian themselves, open source. We only
 downloaded them.
 
-**Try the ones you have not seen:**
+**Two to try tonight:**
 
 ```
 Read this PDF and capture what matters: <drag the file in>
@@ -569,14 +569,8 @@ Read this PDF and capture what matters: <drag the file in>
 Summarise this and capture anything worth keeping: <youtube url>
 ```
 
-```
-Build me a Bases view of my notes so I can see them as a sortable table.
-```
-
-```
-Turn my notes about this project into a canvas so I can see how they
-connect.
-```
+The rest are here for when you want them. Ask what a skill does before you use it — that is
+what the description at the top of each `SKILL.md` is for, and it is one sentence.
 
 ### Writing your own
 
